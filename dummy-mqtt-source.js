@@ -3,6 +3,8 @@ const U3 = require('./three-utils.js');
 const Config = require('./mqtt-config.json');
 const mqtt = require('mqtt');
 const fs = require('fs');
+const { waitForDebugger } = require('inspector');
+const { setTimeout } = require('timers');
 const dir = '../keypoints';
 
 var currentPos = { 'x': 0, 'y': 200, 'z': 0 } // Initial position
@@ -12,8 +14,9 @@ var lastDirElementNum = 0;
 let FPS = 0;
 let target=0;
 let lastTarget=0;
+let zeroString='000000000000';
 
-const appID = 'bkantor_position'
+const appID = 'kantorb_position'
 const ControlMessageString = '_'
 
 const mqqtOptions = {
@@ -33,6 +36,11 @@ const statusPublishOptions = {
     'messageExpiryInterval': 3
   }
 };
+
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 
 const publishTopic = () => { return (`${appID}`) };
 var mqttClient = mqtt.connect(Config.mqttServerUrl, mqqtOptions);
@@ -66,11 +74,29 @@ function getFPSnum() {
   FPS=diff;
 };
 
-function asasdasd() {
-  console.log(FPS);
+
+function readKeypoints() {
+  let current=lastTarget;
+  let zerostoadd=0;
+  if (FPS>0) {
+    target=lastTarget+FPS;
+    lastTarget=target;
+    toSleep=Math.round(1000/FPS)
+    console.log('Current target is '+target+', current value is '+current);
+      while (current < target && FPS > 0) {
+        zerostoadd=12-current.toString().length;
+        console.log(zeroString.substring(0,zerostoadd)+current.toString()+'          '+zerostoadd+' because  '+current+'  '+current.toString().length);
+        current++;
+      }
+  }
+  else {
+    console.log('There is no capture running at the moment');
+  };
+
 };
 
 
-//var periodicUpdate = setInterval(sendStatus, 50);
+var periodicUpdate = setInterval(sendStatus, 50);
 var periodicUpdate = setInterval(getFPSnum, 1000);
-var periodicUpdate2 = setInterval(asasdasd, 1000);
+var periodicUpdate2 = setInterval(readKeypoints, 1000);
+
