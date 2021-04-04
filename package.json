@@ -1,0 +1,14 @@
+{
+  "name": "dummy-mqtt-source",
+  "version": "1.0.0",
+  "description": "Tiny tool to move a tux around",
+  "main": "dummy-mqtt-source.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "mqtt": "^4.2.6"
+  }
+}

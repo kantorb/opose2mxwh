@@ -1,0 +1,5 @@
+{
+    "mqttServerUrl": "mqtts://mqttserver.example.com",
+    "mqttUser": "username",
+    "mqttPassword": "password"
+}
