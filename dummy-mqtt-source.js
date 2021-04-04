@@ -75,7 +75,7 @@ function readKeypoints() {
       while (current < target && FPS > 0) {
         zerostoadd=12-current.toString().length;
         //console.log(zeroString.substring(0,zerostoadd)+current.toString()+'          '+zerostoadd+' because  '+current+'  '+current.toString().length);
-        var obj = JSON.parse(fs.readFileSync('../keypoints/'+zeroString.substring(0,zerostoadd)+current.toString()+'_keypoints.json', 'utf8'));
+        var obj = JSON.parse(fs.readFileSync(dir+'/'+zeroString.substring(0,zerostoadd)+current.toString()+'_keypoints.json', 'utf8'));
         //var parsed = JSON.parse(obj);
         try {
           parsed=obj.people[0]
