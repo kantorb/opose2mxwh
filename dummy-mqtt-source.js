@@ -239,7 +239,6 @@ async function readKeypoints() {
           'left_upper_arm' : left_upper_arm
         };
         console.log(head,left_upper_arm,left_lower_arm,right_upper_arm,right_lower_arm,left_upper_leg,left_lower_leg,right_upper_leg,right_lower_leg,torso);
-        //console.log(bs);
 
         //console.log(bs);
         console.log(current)
