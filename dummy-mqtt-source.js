@@ -58,11 +58,16 @@ function three_angle(x1,x2,y1,y2)
 {
   let a = new THREE.Vector3( x1, y1, 0 );
   let b = new THREE.Vector3( x2, y2, 0 );
-  let c = new THREE.Vector3();
-  c.subVectors(a,b).normalize();
-  console.log(c);
+  let c = new THREE.Vector3( x2, y1, 0 );
+  let d = new THREE.Vector3();
+  let e = new THREE.Vector3();
+  d.subVectors(b,a).normalize();
+  e.subVectors(c,a).normalize();
+  //console.log(c);
   let quaternion = new THREE.Quaternion(); 
-  quaternion.setFromAxisAngle( c, Math.PI / 2 );
+  //quaternion.setFromAxisAngle( c, Math.PI / 2 );
+  quaternion.setFromUnitVectors(e,d);
+  console.log(quaternion);
   return quaternion;
 
 }
@@ -102,6 +107,8 @@ function angle(x1,x2,y1,y2)
 
 function centrpnt(x1,x2,y1,y2)
 {
+  y1=1000-y1;
+  y2=1000-y2;
   x_cnt=(x2-x1)/2;
   y_cnt=(y2-y1)/2;
   return [x1+x_cnt, y1+y_cnt];
@@ -154,7 +161,7 @@ async function readKeypoints() {
       //var parsed = JSON.parse(obj);
       try {
         parsed=obj.people[0]
-        //console.log(parsed.pose_keypoints_2d);
+        //console.log("    asdsadsad     "+parsed.pose_keypoints_2d);
       } catch (error) {
         console.log('No people in file');
       }
@@ -216,10 +223,10 @@ async function readKeypoints() {
         };
         //head orientation
         let curr_angle = rad_to_deg(angle(parsed.pose_keypoints_2d[0],parsed.pose_keypoints_2d[3],parsed.pose_keypoints_2d[1],parsed.pose_keypoints_2d[4]))
-        console.log("Headangle: "+curr_angle+"    "+parsed.pose_keypoints_2d[3]+"    "+parsed.pose_keypoints_2d[0]+"    "+parsed.pose_keypoints_2d[4]+"    "+parsed.pose_keypoints_2d[1]);
-        console.log(centrpnt(parsed.pose_keypoints_2d[0],parsed.pose_keypoints_2d[3],parsed.pose_keypoints_2d[1],parsed.pose_keypoints_2d[4]));
+        //console.log("Headangle: "+curr_angle+"    "+parsed.pose_keypoints_2d[3]+"    "+parsed.pose_keypoints_2d[0]+"    "+parsed.pose_keypoints_2d[4]+"    "+parsed.pose_keypoints_2d[1]);
+        //console.log(centrpnt(parsed.pose_keypoints_2d[0],parsed.pose_keypoints_2d[3],parsed.pose_keypoints_2d[1],parsed.pose_keypoints_2d[4]));
 
-        let head=[bs.NoseX,bs.NoseY,three_angle(bs.NoseX,bs.NeckX,bs.NoseY,bs.NeckY)];
+        let head=[bs.NoseX,1000-bs.NoseY,three_angle(bs.NoseX,bs.NeckX,bs.NoseY,bs.NeckY)];
         let left_upper_arm=[...centrpnt(bs.LShoulderX,bs.LElbowX,bs.LShoulderY,bs.LElbowY),three_angle(bs.LShoulderX,bs.LElbowX,bs.LShoulderY,bs.LElbowY)];
         let left_lower_arm=[...centrpnt(bs.LElbowX,bs.LWristX,bs.LElbowY,bs.LWristY),three_angle(bs.LElbowX,bs.LWristX,bs.LElbowY,bs.LWristY)];
         let right_upper_arm=[...centrpnt(bs.RShoulderX,bs.RElbowX,bs.RShoulderY,bs.RElbowY),three_angle(bs.RShoulderX,bs.RElbowX,bs.RShoulderY,bs.RElbowY)];
@@ -230,17 +237,26 @@ async function readKeypoints() {
         let right_lower_leg=[...centrpnt(bs.RKneeX,bs.RAnkleX,bs.RKneeY,bs.RAnkleY),three_angle(bs.RKneeX,bs.RAnkleX,bs.RKneeY,bs.RAnkleY)];
         let torso=[...centrpnt(bs.NeckX,bs.MidHipX,bs.NeckY,bs.MidHipY),three_angle(bs.NeckX,bs.MidHipX,bs.NeckY,bs.MidHipY)];
 
-        console.log(three_angle(bs.NoseX,bs.NeckX,bs.NoseY,bs.NeckY));
-        console.log(three_angle(bs.LShoulderX,bs.LElbowX,bs.LShoulderY,bs.LElbowY));
-        console.log(three_angle(bs.LElbowX,bs.LWristX,bs.LElbowY,bs.LWristY));
+        //console.log(three_angle(bs.NoseX,bs.NeckX,bs.NoseY,bs.NeckY));
+        //console.log(three_angle(bs.LShoulderX,bs.LElbowX,bs.LShoulderY,bs.LElbowY));
+        //console.log(three_angle(bs.LElbowX,bs.LWristX,bs.LElbowY,bs.LWristY));
 
         toSend = {
           'head' : head,
-          'left_upper_arm' : left_upper_arm
+          'left_upper_arm' : left_upper_arm,
+          'left_lower_arm' : left_lower_arm,
+          'right_upper_arm' : right_upper_arm,
+          'right_lower_arm' : right_lower_arm,
+          'left_upper_leg' : left_upper_leg,
+          'left_lower_leg' : left_lower_leg,
+          'right_upper_leg' : right_upper_leg,
+          'right_lower_leg' : right_lower_leg,
+          'torso' : torso
         };
-        console.log(head,left_upper_arm,left_lower_arm,right_upper_arm,right_lower_arm,left_upper_leg,left_lower_leg,right_upper_leg,right_lower_leg,torso);
+        //console.log(head,left_upper_arm,left_lower_arm,right_upper_arm,right_lower_arm,left_upper_leg,left_lower_leg,right_upper_leg,right_lower_leg,torso);
 
         //console.log(bs);
+        //console.log(toSend);
         console.log(current)
         //await sleep(500);
         sendSkeleton(toSend);
@@ -259,6 +275,7 @@ async function readKeypoints() {
 
 
 //var periodicUpdate = setInterval(sendSkeleton, 1000);
-var periodicUpdate2 = setInterval(getFPSnum, 1000);
+//var periodicUpdate2 = setInterval(getFPSnum, 1000);
+var periodicUpdate2 = setInterval(getFPSnum, 100);
 var periodicUpdate3 = setInterval(readKeypoints, 1000);
 
