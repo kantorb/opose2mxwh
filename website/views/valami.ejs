@@ -1,0 +1,8 @@
+<%- include('header') -%>
+<% console.log('def') %>
+        <% for (key in gyumolcsok) { var item = gyumolcsok[key]; %>
+            <h2><%= item.name %></h2>
+            <h3><%= item.szin %></h3>
+        <% } %>
+
+<%- include('footer') -%>
